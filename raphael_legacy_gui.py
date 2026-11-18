@@ -92,13 +92,21 @@ class RaphaelGUI:
         ]
 
         self.is_locked = False
-        self.engine = engine or Raphael(
-            callback_print=self._on_raphael_message,
-            hide_window_callback=self.hide_window_sync,
-            show_window_callback=self.show_window_sync,
-            on_speak_start=self._on_speak_start,
-            on_speak_end=self._on_speak_end
-        )
+        if engine:
+            self.engine = engine
+            self.engine.callback_print = self._on_raphael_message
+            self.engine.hide_window_callback = self.hide_window_sync
+            self.engine.show_window_callback = self.show_window_sync
+            self.engine.on_speak_start = self._on_speak_start
+            self.engine.on_speak_end = self._on_speak_end
+        else:
+            self.engine = Raphael(
+                callback_print=self._on_raphael_message,
+                hide_window_callback=self.hide_window_sync,
+                show_window_callback=self.show_window_sync,
+                on_speak_start=self._on_speak_start,
+                on_speak_end=self._on_speak_end
+            )
         self.engine.gui = self
         if self.engine.memory.get("passcode"):
             self.is_locked = True
