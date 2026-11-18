@@ -1,5 +1,6 @@
 @echo off
-title Raphael AI — Celestial Edge (Demo Edition)
+setlocal enabledelayedexpansion
+title Raphael AI - Celestial Edge (Demo Edition)
 cd /d "%~dp0"
 
 :: Detect Python

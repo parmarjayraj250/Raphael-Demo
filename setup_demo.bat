@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title Raphael AI (Demo Edition) — Setup
+title Raphael AI (Demo Edition) - Setup
 cd /d "%~dp0"
 
 echo ======================================================================
@@ -26,7 +26,7 @@ if not defined PY_CMD (
     exit /b 1
 )
 
-echo [✓] Found compatible Python: %PY_CMD%
+echo [*] Found compatible Python: %PY_CMD%
 echo.
 echo Installing lightweight demo dependencies...
 %PY_CMD% -m pip install --upgrade pip >nul 2>&1
@@ -48,14 +48,14 @@ set "SHORTCUT_SCRIPT=%TEMP%\create_raphael_demo_lnk.vbs"
     echo oLink.TargetPath = "%PYW_PATH%"
     echo oLink.Arguments = """" ^& "%~dp0raphael_demo.py" ^& """"
     echo oLink.WorkingDirectory = "%~dp0"
-    echo oLink.Description = "Raphael AI — Celestial Edge (Demo Edition)"
+    echo oLink.Description = "Raphael AI - Celestial Edge (Demo Edition)"
     echo oLink.Save
 ) > "%SHORTCUT_SCRIPT%"
 
 cscript //nologo "%SHORTCUT_SCRIPT%" >nul 2>&1
 del "%SHORTCUT_SCRIPT%" >nul 2>&1
 
-echo [✓] Shortcut 'Raphael Demo' created on your Desktop!
+echo [*] Shortcut 'Raphael Demo' created on your Desktop!
 echo.
 echo ======================================================================
 echo Setup Complete!
