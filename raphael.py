@@ -739,6 +739,35 @@ class Raphael:
         else:
             print("Raphael: " + str(text))
 
+    @staticmethod
+    def _sanitize_for_speech(text: str) -> str:
+        """Strips markdown syntax, emojis, bullets, and symbols so TTS doesn't read out emoji names."""
+        text = re.sub(r'[*_#`~>|\\\[\](){}]', ' ', str(text))
+        text = re.sub(r'https?://\S+|www\.\S+', ' ', text)
+        text = re.sub(r'[a-zA-Z]:\\[\w\\.-]+', ' ', text)
+        emoji_pattern = re.compile(
+            '['
+            '\U0001F600-\U0001F64F'  # emoticons
+            '\U0001F300-\U0001F5FF'  # symbols & pictographs (💡, 🚀, 🔥, etc.)
+            '\U0001F680-\U0001F6FF'  # transport & map symbols
+            '\U0001F1E0-\U0001F1FF'  # flags
+            '\U0001F900-\U0001F9FF'  # supplemental symbols & pictographs
+            '\U0001FA70-\U0001FAFF'  # symbols extended-a
+            '\U00002702-\U000027B0'  # dingbats
+            '\U000024C2-\U0001F251'  # enclosed chars
+            '\U00002600-\U000026FF'  # misc symbols (⚡, ⚠, etc.)
+            '\U00002300-\U000023FF'  # misc technical
+            '\U00002B00-\U00002BFF'  # misc symbols and arrows
+            '\U00002190-\U000021FF'  # arrows
+            '\U0000FE00-\U0000FE0F'  # variation selectors
+            '\U0000200D'             # zero width joiner
+            '✦★☆●•◆◇■□✓✔✕✖🛑⚠🛠📌💡✨🔥🚀'
+            ']+',
+            flags=re.UNICODE
+        )
+        text = emoji_pattern.sub(' ', text)
+        return re.sub(r'\s+', ' ', text).strip()
+
     def speak(self, text, spoken_text=None):
         if isinstance(text, tuple):
             if len(text) >= 2:
@@ -751,11 +780,8 @@ class Raphael:
         to_say = spoken_text if spoken_text else text
         if isinstance(to_say, tuple):
             to_say = to_say[0] if len(to_say) > 0 else ""
-        # Clean up for speech synthesis so symbols don't stutter
-        to_say = re.sub(r'[*_#`~>|-]', ' ', str(to_say))
-        to_say = re.sub(r'[a-zA-Z]:\\[\w\\.-]+', ' ', to_say)
-        to_say = re.sub(r'https?://\S+', ' ', to_say)
-        to_say = re.sub(r'\s+', ' ', to_say).strip()
+        # Clean up for speech synthesis so emojis and symbols don't speak aloud
+        to_say = self._sanitize_for_speech(to_say)
 
         if to_say:
             self._speech_queue.put(to_say)
