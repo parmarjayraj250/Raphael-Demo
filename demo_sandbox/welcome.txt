@@ -1,0 +1,17 @@
+Welcome to Raphael AI (Celestial Edge — Demo Edition)!
+
+This is your safe demo workspace.
+You can ask Raphael to read, write, summarize, or organize text notes in this folder.
+
+What you can try:
+• "What is my CPU and RAM usage?"
+• "Search the web for the latest NASA news"
+• "Who was Leonardo da Vinci? Look it up on Wikipedia"
+• "Write a note in my demo sandbox about today's ideas"
+• "What notes do I have in my demo sandbox?"
+
+For your security on this PC:
+• Command execution (CMD/PowerShell) is disabled.
+• Computer screen control and mouse automation are disabled.
+• System file deletion is disabled.
+• File access is strictly jailed to this demo_sandbox folder.
