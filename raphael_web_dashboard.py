@@ -9,6 +9,8 @@ try:
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
+    Depends = lambda x=None: None
+    class HTTPAuthorizationCredentials: pass
 
 security = HTTPBearer(auto_error=False) if FASTAPI_AVAILABLE else None
 
