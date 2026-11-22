@@ -17,6 +17,12 @@ Raphael AI (Demo Edition) is a lightweight, safe preview of Raphael AI designed 
 
 ---
 
+## 📖 Documentation & Controls Guide
+
+For an in-depth breakdown of every button, action chip, navigation tab, and safety jail in the UI, check out the **[Interface & Controls Guide](INTERFACE_GUIDE.md)**.
+
+---
+
 ## 🔒 Safety & Guardrails (Demo Edition)
 
 To protect your system when running the demo:

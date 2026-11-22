@@ -152,7 +152,10 @@ from raphael_skills_engine import RaphaelSkillSynthesizer
 from raphael_swarm import RaphaelSwarm
 from raphael_computer_use import RaphaelComputerUse
 from raphael_knowledge_graph import RaphaelKnowledgeGraph
-from raphael_web_dashboard import RaphaelWebDashboard
+try:
+    from raphael_web_dashboard import RaphaelWebDashboard
+except Exception:
+    RaphaelWebDashboard = None
 from raphael_disk_hunter import RaphaelDiskHunter
 from raphael_tools import RaphaelToolRegistry
 
@@ -510,11 +513,14 @@ class Raphael:
             self.knowledge_graph  = RaphaelKnowledgeGraph(self.safety_manager)
             self.disk_hunter      = RaphaelDiskHunter(self.safety_manager, speak_func=self.speak, alert_callback=self._print)
             self._register_default_tools()
-            self.web_dashboard    = RaphaelWebDashboard(self, self.safety_manager, port=8765, open_access=True)
-            try:
-                self.web_dashboard.start_server(allow_lan=True)
-            except Exception:
-                pass
+            if RaphaelWebDashboard is not None:
+                self.web_dashboard = RaphaelWebDashboard(self, self.safety_manager, port=8765, open_access=True)
+                try:
+                    self.web_dashboard.start_server(allow_lan=True)
+                except Exception:
+                    pass
+            else:
+                self.web_dashboard = None
 
             self._start_proactive_alerts()
             self._start_scheduler_loop()
@@ -1423,6 +1429,20 @@ class Raphael:
 
     # ── Feature 21: File Reader ───────────────────────────────────────────────
     def read_file(self, filepath, summarize=False):
+        if getattr(self, "demo_mode", False):
+            from pathlib import Path
+            raw = str(filepath).strip().strip('"\'').replace("/", "\\")
+            sandbox_dir = (Path(__file__).parent / "demo_sandbox").resolve()
+            try:
+                if ".." in Path(raw).parts:
+                    return "🔒 Demo Edition: Access outside demo_sandbox is blocked for your security."
+                resolved = (sandbox_dir / raw).resolve() if not os.path.isabs(raw) else Path(raw).resolve()
+                if not resolved.is_relative_to(sandbox_dir):
+                    return "🔒 Demo Edition: Access outside demo_sandbox is blocked for your security."
+                filepath = str(resolved)
+            except Exception:
+                return "🔒 Demo Edition: Access outside demo_sandbox is blocked for your security."
+
         if not os.path.exists(filepath):
             return "File not found: " + filepath
         try:

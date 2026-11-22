@@ -116,6 +116,22 @@ class RaphaelDemoEngine(Raphael):
         )
 
     # ── Jailed Sandbox File Handlers ──────────────────────────────────────────
+    def read_file(self, filepath: str, summarize: bool = False) -> str:
+        safe, path = _is_safe_sandbox_path(filepath)
+        if not safe:
+            return "🔒 Demo Edition: Access outside demo_sandbox is blocked for your security."
+        if not path.is_file():
+            return f"File '{path.name}' not found in demo_sandbox."
+        try:
+            content = path.read_text(encoding="utf-8", errors="replace").strip()
+            if not content:
+                return "File is empty."
+            if summarize:
+                return self.ai_chat("Summarize this file:\n" + content[:2000])
+            return content[:1000]
+        except Exception as e:
+            return f"Error: {e}"
+
     def demo_read_file(self, filename: str) -> str:
         safe, path = _is_safe_sandbox_path(filename)
         if not safe:

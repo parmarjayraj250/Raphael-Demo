@@ -83,13 +83,21 @@ class RaphaelGUI:
         self._wave_active   = False
         self._orb_angle     = 0.0
         self._pill_win      = None
-        self._recent_events = [
-            ("Live news sources active", "1m ago"),
-            ("ChromaDB vector memory online", "3m ago"),
-            ("Proactive context intelligence ready", "6m ago"),
-            ("Deep research agent standing by", "12m ago"),
-            ("System health verified", "18m ago"),
-        ]
+        if self.demo:
+            self._recent_events = [
+                ("Demo sandbox initialized", "Active"),
+                ("Safety guardrails enforced", "Online"),
+                ("Local Ollama connected", "Ready"),
+                ("Real-time telemetry active", "Online"),
+            ]
+        else:
+            self._recent_events = [
+                ("Live news sources active", "1m ago"),
+                ("ChromaDB vector memory online", "3m ago"),
+                ("Proactive context intelligence ready", "6m ago"),
+                ("Deep research agent standing by", "12m ago"),
+                ("System health verified", "18m ago"),
+            ]
 
         self.is_locked = False
         if engine:
@@ -530,8 +538,9 @@ class RaphaelGUI:
         hdr_right.pack(side="right", padx=14)
 
         # Status badge pill (Raphael with green dot)
+        status_text = "● RAPHAEL" if self.demo else "● RAPHAEL ⌵"
         self.status_dot = ctk.CTkButton(
-            hdr_right, text="● RAPHAEL ⌵", width=105, height=26,
+            hdr_right, text=status_text, width=105, height=26,
             fg_color="#0c152e", hover_color="#141f3d",
             border_color="#1e294b", border_width=1,
             text_color="#f8fafc", font=ctk.CTkFont(size=10, weight="bold"),
@@ -549,15 +558,25 @@ class RaphaelGUI:
         )
         net_pill.pack(side="left", padx=5)
 
-        # Mobile Remote pill
-        mobile_pill = ctk.CTkButton(
-            hdr_right, text="📱 MOBILE", width=88, height=26,
-            fg_color="#241406", hover_color="#3d230a",
-            border_color="#d97706", border_width=1,
-            text_color="#f5a623", font=ctk.CTkFont(size=10, weight="bold"),
-            corner_radius=13, command=lambda: self._quick("pair mobile")
-        )
-        mobile_pill.pack(side="left", padx=5)
+        # Mobile Remote / Demo Badge pill
+        if self.demo:
+            demo_badge = ctk.CTkButton(
+                hdr_right, text="🛡 DEMO SAFE", width=100, height=26,
+                fg_color="#0a2318", hover_color="#133d2a",
+                border_color="#10b981", border_width=1,
+                text_color="#10b981", font=ctk.CTkFont(size=10, weight="bold"),
+                corner_radius=13, command=lambda: self._quick("help")
+            )
+            demo_badge.pack(side="left", padx=5)
+        else:
+            mobile_pill = ctk.CTkButton(
+                hdr_right, text="📱 MOBILE", width=88, height=26,
+                fg_color="#241406", hover_color="#3d230a",
+                border_color="#d97706", border_width=1,
+                text_color="#f5a623", font=ctk.CTkFont(size=10, weight="bold"),
+                corner_radius=13, command=lambda: self._quick("pair mobile")
+            )
+            mobile_pill.pack(side="left", padx=5)
 
         # Research Vault pill
         research_pill = ctk.CTkButton(
@@ -595,15 +614,26 @@ class RaphaelGUI:
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)
 
-        nav_items = [
-            ("🏠  Commands",   "__nav_commands__", True),
-            ("⚙  System",     "system status",     False),
-            ("📑  Notes",      "view notes",        False),
-            ("🔍  Search",     "__search_prompt__", False),
-            ("✨  Automation", "view schedule",     False),
-            ("📁  Files",      "organize my files", False),
-            ("⚙  Settings",   "my facts",          False),
-        ]
+        if self.demo:
+            nav_items = [
+                ("🏠  Commands",   "__nav_commands__", True),
+                ("⚙  System",     "system status",     False),
+                ("📑  Notes",      "view notes",        False),
+                ("🔍  Search",     "__search_prompt__", False),
+                ("📁  Files",      "show demo files",   False),
+                ("❓  Help",       "help",              False),
+                ("⚙  Settings",   "my facts",          False),
+            ]
+        else:
+            nav_items = [
+                ("🏠  Commands",   "__nav_commands__", True),
+                ("⚙  System",     "system status",     False),
+                ("📑  Notes",      "view notes",        False),
+                ("🔍  Search",     "__search_prompt__", False),
+                ("✨  Automation", "view schedule",     False),
+                ("📁  Files",      "organize my files", False),
+                ("⚙  Settings",   "my facts",          False),
+            ]
 
         ctk.CTkFrame(sidebar, fg_color="transparent", height=10).pack()
         for label, cmd, is_active in nav_items:
@@ -740,13 +770,22 @@ class RaphaelGUI:
         chips_row = ctk.CTkFrame(hud_col, fg_color="transparent")
         chips_row.pack(anchor="w", fill="x", pady=(0, 4))
 
-        action_chips = [
-            ("💡 Suggest something", "suggest something"),
-            ("📑 Summarise a file",  "summarize clipboard"),
-            ("🔍 Search the web",    "__search_prompt__"),
-            ("⚙ Automate a task",   "view schedule"),
-            ("🖥 Open an app",       "__open_app_dialog__"),
-        ]
+        if self.demo:
+            action_chips = [
+                ("💡 Suggest something", "suggest something"),
+                ("📊 System Vitals",     "system status"),
+                ("📁 Demo Sandbox",      "show demo files"),
+                ("🔍 Search the web",    "__search_prompt__"),
+                ("🧠 Wikipedia",         "search wikipedia for artificial intelligence"),
+            ]
+        else:
+            action_chips = [
+                ("💡 Suggest something", "suggest something"),
+                ("📑 Summarise a file",  "summarize clipboard"),
+                ("🔍 Search the web",    "__search_prompt__"),
+                ("⚙ Automate a task",   "view schedule"),
+                ("🖥 Open an app",       "__open_app_dialog__"),
+            ]
         for chip_lbl, chip_cmd in action_chips:
             ctk.CTkButton(
                 chips_row, text=chip_lbl, height=30,
@@ -821,15 +860,26 @@ class RaphaelGUI:
         q_bar = ctk.CTkFrame(q_card, fg_color="transparent")
         q_bar.pack(fill="x", padx=10, pady=(0, 10))
 
-        quick_defs = [
-            ("☁ Weather",        "Get latest weather",  "weather"),
-            ("</> Open VS Code",  "Launch editor",       "open vs code"),
-            ("💡 AI Suggest",     "Smart suggestions",   "suggest something"),
-            ("🔍 Search Web",     "Find anything",       "__search_prompt__"),
-            ("📑 Notes",          "Open notes",          "view notes"),
-            ("🧹 Clean Temp",     "Free up space",       "clean temp files"),
-            ("⚙ Free RAM",       "Optimize memory",     "free up ram"),
-        ]
+        if self.demo:
+            quick_defs = [
+                ("☁ Weather",        "Get latest weather",  "weather"),
+                ("📁 Sandbox",        "View test files",     "show demo files"),
+                ("💡 AI Suggest",     "Smart suggestions",   "suggest something"),
+                ("🔍 Search Web",     "Find anything",       "__search_prompt__"),
+                ("📑 Notes",          "Open notes",          "view notes"),
+                ("🧠 Wikipedia",      "Encyclopedia lookup", "search wikipedia for artificial intelligence"),
+                ("⚙ Free RAM",       "Optimize memory",     "free up ram"),
+            ]
+        else:
+            quick_defs = [
+                ("☁ Weather",        "Get latest weather",  "weather"),
+                ("</> Open VS Code",  "Launch editor",       "open vs code"),
+                ("💡 AI Suggest",     "Smart suggestions",   "suggest something"),
+                ("🔍 Search Web",     "Find anything",       "__search_prompt__"),
+                ("📑 Notes",          "Open notes",          "view notes"),
+                ("🧹 Clean Temp",     "Free up space",       "clean temp files"),
+                ("⚙ Free RAM",       "Optimize memory",     "free up ram"),
+            ]
         for icon_title, sub, c_cmd in quick_defs:
             card = ctk.CTkFrame(q_bar, fg_color="#0e1630", border_color="#1a2546",
                                 border_width=1, corner_radius=8, height=48)
@@ -869,14 +919,24 @@ class RaphaelGUI:
         pop_bar = ctk.CTkFrame(pop_card, fg_color="transparent")
         pop_bar.pack(fill="x", padx=10, pady=(0, 10))
 
-        pop_chips = [
-            ("python run app.py", "run python app.py"),
-            ("explain concept",   "explain neuromorphic computing"),
-            ("read my screen",    "read my screen"),
-            ("summarise file",    "summarize clipboard"),
-            ("deep research",     "__research__"),
-            ("my next alerts",    "my news alerts"),
-        ]
+        if self.demo:
+            pop_chips = [
+                ("explain concept",   "explain neuromorphic computing"),
+                ("deep research",     "__research__"),
+                ("search web",        "__search_prompt__"),
+                ("system status",     "system status"),
+                ("show demo files",   "show demo files"),
+                ("summarize note",    "view notes"),
+            ]
+        else:
+            pop_chips = [
+                ("python run app.py", "run python app.py"),
+                ("explain concept",   "explain neuromorphic computing"),
+                ("read my screen",    "read my screen"),
+                ("summarise file",    "summarize clipboard"),
+                ("deep research",     "__research__"),
+                ("my next alerts",    "my news alerts"),
+            ]
         for chip_label, c_cmd in pop_chips:
             ctk.CTkButton(
                 pop_bar, text=chip_label, height=28,
@@ -1022,10 +1082,27 @@ class RaphaelGUI:
     def _attach_file(self):
         try:
             from tkinter import filedialog
-            fn = filedialog.askopenfilename(title="Select file for Raphael to summarize")
-            if fn:
-                self.entry.delete(0, "end")
-                self.entry.insert(0, f"summarize file {fn}")
+            from pathlib import Path
+            if getattr(self, "demo", False):
+                sandbox_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "demo_sandbox")
+                os.makedirs(sandbox_dir, exist_ok=True)
+                fn = filedialog.askopenfilename(
+                    title="Select a file from demo_sandbox",
+                    initialdir=sandbox_dir
+                )
+                if fn:
+                    p = Path(fn).resolve()
+                    s = Path(sandbox_dir).resolve()
+                    if not p.is_relative_to(s):
+                        self._append("System", "🔒 Demo Edition: Only files inside the demo_sandbox folder can be attached.")
+                        return
+                    self.entry.delete(0, "end")
+                    self.entry.insert(0, f"summarize file {p.name}")
+            else:
+                fn = filedialog.askopenfilename(title="Select file for Raphael to summarize")
+                if fn:
+                    self.entry.delete(0, "end")
+                    self.entry.insert(0, f"summarize file {fn}")
         except Exception:
             pass
 
@@ -1729,6 +1806,9 @@ class RaphaelGUI:
     def _voice(self):
         if self.is_locked:
             self.root.after(0, self._lock_ui)
+            return
+        if not getattr(self.engine, "microphone", None):
+            self._append("System", "🎙 Microphone requires SpeechRecognition & PyAudio. You can type commands below!")
             return
         def _work():
             self.root.after(0, lambda: (
