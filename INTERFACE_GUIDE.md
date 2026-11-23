@@ -95,10 +95,8 @@ The right-hand side panels provide real-time hardware telemetry:
 
 ---
 
-## 8. Safety & Jailing Architecture
+## 8. Isolated Workspace Architecture
 
-The Demo Edition was specifically built to allow safe demonstration on any Windows machine:
-1. **Zero Shell Execution**: Commands like `cmd.exe`, `powershell`, or running arbitrary `.exe` binaries are rejected.
-2. **Path Jailing**: All file read/write operations strictly check `path.is_relative_to(demo_sandbox)`. Directory traversal via `..` or absolute external paths are blocked at the engine layer.
-3. **No Screen/Mouse Hijacking**: GUI automation tools (PyAutoGUI, OCR screen scraping) are disabled.
-4. **Safe Local Loopback**: Binds strictly to `127.0.0.1`, guaranteeing no network attack surface.
+The Demo Edition operates strictly within its designated workspace:
+- **Jailed File Workspace**: File read, write, and summarize tools are strictly bound to `demo_sandbox/`.
+- **Private Loopback**: Runs purely on `127.0.0.1` on local ports, communicating only with local Ollama.

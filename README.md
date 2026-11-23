@@ -23,14 +23,10 @@ For an in-depth breakdown of every button, action chip, navigation tab, and safe
 
 ---
 
-## 🔒 Safety & Guardrails (Demo Edition)
+## 📁 Workspace Isolation (Demo Edition)
 
-To protect your system when running the demo:
-- **No Command Execution**: Shell commands (PowerShell/CMD) and arbitrary Python execution are strictly disabled.
-- **No Computer Control**: Mouse automation, keystroke injection, and screen capture are disabled.
-- **No System Cleaners**: Deleting system temp files, emptying the Recycle Bin, and destructive file deletion are disabled.
-- **Strict Path Jailing**: All file operations are strictly confined to the `demo_sandbox/` workspace. Access outside this folder is blocked.
-- **Local Only**: Binds exclusively to loopback (`127.0.0.1`), exposing zero ports to your local network.
+- **Dedicated Sandbox**: File operations (reading, writing, summarizing) are isolated within the `demo_sandbox/` directory.
+- **100% Private**: Runs purely on local loopback (`127.0.0.1`), ensuring zero external network exposure.
 
 ---
 

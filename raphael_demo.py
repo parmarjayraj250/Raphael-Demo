@@ -162,6 +162,37 @@ class RaphaelDemoEngine(Raphael):
         except Exception as e:
             return f"Error listing files: {e}"
 
+    # ── Neutralized Host Operations (Excluded from Demo Edition) ──────────────
+    def run_command(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def compile_code(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def delete_path(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def shutdown_pc(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def restart_pc(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def read_screen(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def install_package(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def kill_process(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def open_app(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
+    def media_control(self, *args, **kwargs) -> str:
+        return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
+
     # ── Override Respond with Strict Guardrails ──────────────────────────────
     def respond(self, text, is_voice=False):
         t = text.strip().lower()

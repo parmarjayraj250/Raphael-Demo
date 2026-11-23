@@ -1050,7 +1050,7 @@ class Raphael:
     # ── Feature 07: Compile Code ───────────────────────────────────────────────
     def compile_code(self, filename, run_after=False):
         if getattr(self, "demo_mode", False):
-            return "🔒 Demo Edition: Code compilation and execution is disabled for safety."
+            return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
         if not os.path.exists(filename):
             return "File not found: " + filename
         ext  = os.path.splitext(filename)[1].lower()
@@ -1100,7 +1100,7 @@ class Raphael:
 
     def delete_path(self, path):
         if getattr(self, "demo_mode", False):
-            return "🔒 Demo Edition: File deletion is disabled for safety."
+            return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
         if not os.path.exists(path):
             return "Not found: " + path
         try:
@@ -1146,7 +1146,7 @@ class Raphael:
     # ── Feature 13: Screen OCR ────────────────────────────────────────────────
     def read_screen(self, summarize=False):
         if getattr(self, "demo_mode", False):
-            return "🔒 Demo Edition: Screen capture and OCR is disabled for safety."
+            return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
         if not OCR_AVAILABLE:
             return ("OCR requires extra setup. Install with:\n"
                     "  winget install UB-Mannheim.TesseractOCR\n"
@@ -2535,19 +2535,19 @@ class Raphael:
             if any(t.startswith(p) for p in ["open ", "launch ", "start "]):
                 target = t.split(" ", 1)[1].strip()
                 if not any(target == w for w in ["web", "browser", "vitals", "memory"]):
-                    return f"🔒 Demo Edition: Launching desktop applications ('{target}') is disabled for your security."
+                    return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
             # Block command-line / script execution
             if any(t.startswith(p) for p in ["run ", "exec ", "execute ", "cmd ", "powershell ", "terminal ", "shell "]):
-                return "🔒 Demo Edition: Command-line and script execution is disabled for your security."
+                return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
             # Block system cleaning and file deletion
             if any(k in t for k in ["clean temp", "clear temp", "clean disk", "empty recycle", "delete file", "delete folder", "wipe disk", "delete path"]):
-                return "🔒 Demo Edition: System and file deletion tools are disabled in Demo Edition."
+                return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
             # Block computer control / mouse / keyboard automation
             if any(k in t for k in ["take screenshot", "move mouse", "click", "type text", "computer use", "press key", "capture screen"]):
-                return "🔒 Demo Edition: Computer control and mouse/screen automation are disabled."
+                return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
             # Block custom skill synthesis and swarm
             if any(t.startswith(p) for p in ["evolve", "create skill", "learn skill", "swarm "]):
-                return "🔒 Demo Edition: Custom skill synthesis and swarm workers are disabled."
+                return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
 
         # ── 0. Tool Registry Approvals & Inspection ────────────────────────────
         m = re.match(r"^confirm action\s+(appr_\w+)$", t)
@@ -3109,7 +3109,7 @@ class Raphael:
         # Power & System Control (Strict explicit intent + confirmation required!)
         if t in ["shutdown", "shutdown pc", "shut down", "shut down pc", "turn off pc", "power off laptop", "turn off laptop", "shutdown system"]:
             if getattr(self, "demo_mode", False):
-                return "🔒 Demo Edition: Power commands (shutdown/restart) are disabled for safety."
+                return "This command is not available in the Demo Edition. Type 'help' to see all working commands."
             self._pending_power_action = "shutdown"
             return "⚠️ Are you sure you want to shut down your PC? Say 'confirm shutdown' to proceed, or 'cancel' to abort."
 
@@ -3233,29 +3233,24 @@ class Raphael:
         if getattr(self, "demo_mode", False):
             return (
                 "Raphael AI (Demo Edition) - Available Commands:\n\n"
-                "  🟢 LIVE & FULLY WORKING:\n"
                 "  weather [city]              real-time weather forecast\n"
                 "  news                        live headlines via DuckDuckGo\n"
                 "  system status               live CPU, RAM, Disk, and Battery vitals\n"
                 "  search [query]              real-time web search\n"
                 "  search wikipedia for [X]    instant encyclopedia summary\n"
-                "  explain [concept]           deep AI explanation via local Ollama LLM\n"
+                "  explain [concept]           AI explanation via local Ollama LLM\n"
                 "  read clipboard              display current copied clipboard text\n"
                 "  summarize clipboard         AI summary of copied clipboard text\n"
                 "  save note [text]            save note to persistent storage\n"
                 "  view notes                  display saved notes\n"
+                "  show demo files             list all files in demo_sandbox/\n"
+                "  read file [filename]        read a file inside demo_sandbox/\n"
+                "  summarize file [filename]   AI summarize a file inside demo_sandbox/\n"
                 "  free up ram                 memory optimization & garbage collection\n"
                 "  my name is [name]           remember your name in local memory\n"
                 "  switch to japanese          change voice language\n"
                 "  [A] then [B]                multi-step chained commands\n"
-                "  exit / quit                 close Raphael\n\n"
-                "  📁 JAILED SANDBOX TOOLS:\n"
-                "  show demo files             list all files in demo_sandbox/\n"
-                "  read file [filename]        read a file inside demo_sandbox/\n"
-                "  summarize file [filename]   AI summarize a file inside demo_sandbox/\n\n"
-                "  🔒 DISABLED FOR SAFETY IN DEMO:\n"
-                "  Shell commands (run), app launch (open), screen capture (OCR),\n"
-                "  compilers, pip install, and file deletions are locked for security."
+                "  exit / quit                 close Raphael"
             )
         return (
             "Available commands:\n"
