@@ -1670,7 +1670,7 @@ class Raphael:
         Proactively analyzes system status, storage clutter, and capabilities
         to provide a high-value contextual suggestion for Jay.
         """
-        name = self.memory.get("user_name", "Jay")
+        name = self.memory.get("user_name") or ("friend" if getattr(self, "demo_mode", False) else "Jay")
         suggestions = []
         try:
             if PSUTIL_AVAILABLE:
@@ -2767,7 +2767,10 @@ class Raphael:
             return "Goodbye."
 
         if t in {"bye", "goodbye", "see you", "farewell"}:
-            return "Goodbye, Jay! I'll be right here in the background whenever you need me."
+            u_name = self.memory.get("user_name")
+            if getattr(self, "demo_mode", False):
+                return f"Goodbye{', ' + u_name if u_name else ''}! I'll be right here in the background whenever you need me."
+            return f"Goodbye, {u_name or 'Jay'}! I'll be right here in the background whenever you need me."
 
         # Help
         if t in {"help", "commands"}:

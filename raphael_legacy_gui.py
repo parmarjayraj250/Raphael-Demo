@@ -749,13 +749,19 @@ class RaphaelGUI:
         hud_col = ctk.CTkFrame(hud_inner, fg_color="transparent")
         hud_col.pack(side="left", fill="both", expand=True)
 
-        user_n = self.engine.memory.get("user_name") or "Jay"
+        user_n = self.engine.memory.get("user_name")
         hour = datetime.now().hour
         greet_word = "Good morning" if hour < 12 else ("Good afternoon" if hour < 18 else "Good evening")
         sun_icon = "☀️" if hour < 18 else "🌙"
 
+        if self.demo:
+            greet_title = f"{greet_word}, {user_n} {sun_icon}" if user_n else f"{greet_word} {sun_icon}"
+        else:
+            user_n = user_n or "Jay"
+            greet_title = f"{greet_word}, {user_n} {sun_icon}"
+
         self.greet_lbl = ctk.CTkLabel(
-            hud_col, text=f"{greet_word}, {user_n} {sun_icon}",
+            hud_col, text=greet_title,
             font=ctk.CTkFont(family="Helvetica", size=18, weight="bold"),
             text_color="#f8fafc", anchor="w"
         )
