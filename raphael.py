@@ -3222,6 +3222,33 @@ class Raphael:
         return self.ai_chat(text, is_voice=is_voice)
 
     def _help(self):
+        if getattr(self, "demo_mode", False):
+            return (
+                "Raphael AI (Demo Edition) - Available Commands:\n\n"
+                "  🟢 LIVE & FULLY WORKING:\n"
+                "  weather [city]              real-time weather forecast\n"
+                "  news                        live headlines via DuckDuckGo\n"
+                "  system status               live CPU, RAM, Disk, and Battery vitals\n"
+                "  search [query]              real-time web search\n"
+                "  search wikipedia for [X]    instant encyclopedia summary\n"
+                "  explain [concept]           deep AI explanation via local Ollama LLM\n"
+                "  read clipboard              display current copied clipboard text\n"
+                "  summarize clipboard         AI summary of copied clipboard text\n"
+                "  save note [text]            save note to persistent storage\n"
+                "  view notes                  display saved notes\n"
+                "  free up ram                 memory optimization & garbage collection\n"
+                "  my name is [name]           remember your name in local memory\n"
+                "  switch to japanese          change voice language\n"
+                "  [A] then [B]                multi-step chained commands\n"
+                "  exit / quit                 close Raphael\n\n"
+                "  📁 JAILED SANDBOX TOOLS:\n"
+                "  show demo files             list all files in demo_sandbox/\n"
+                "  read file [filename]        read a file inside demo_sandbox/\n"
+                "  summarize file [filename]   AI summarize a file inside demo_sandbox/\n\n"
+                "  🔒 DISABLED FOR SAFETY IN DEMO:\n"
+                "  Shell commands (run), app launch (open), screen capture (OCR),\n"
+                "  compilers, pip install, and file deletions are locked for security."
+            )
         return (
             "Available commands:\n"
             "  weather [city]              real-time weather\n"
