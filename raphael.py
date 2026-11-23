@@ -1049,6 +1049,8 @@ class Raphael:
 
     # ── Feature 07: Compile Code ───────────────────────────────────────────────
     def compile_code(self, filename, run_after=False):
+        if getattr(self, "demo_mode", False):
+            return "🔒 Demo Edition: Code compilation and execution is disabled for safety."
         if not os.path.exists(filename):
             return "File not found: " + filename
         ext  = os.path.splitext(filename)[1].lower()
@@ -1097,6 +1099,8 @@ class Raphael:
             return "Error: " + str(e)
 
     def delete_path(self, path):
+        if getattr(self, "demo_mode", False):
+            return "🔒 Demo Edition: File deletion is disabled for safety."
         if not os.path.exists(path):
             return "Not found: " + path
         try:
@@ -1141,6 +1145,8 @@ class Raphael:
 
     # ── Feature 13: Screen OCR ────────────────────────────────────────────────
     def read_screen(self, summarize=False):
+        if getattr(self, "demo_mode", False):
+            return "🔒 Demo Edition: Screen capture and OCR is disabled for safety."
         if not OCR_AVAILABLE:
             return ("OCR requires extra setup. Install with:\n"
                     "  winget install UB-Mannheim.TesseractOCR\n"
@@ -3101,7 +3107,9 @@ class Raphael:
             return self.set_language(m.group(1))
 
         # Power & System Control (Strict explicit intent + confirmation required!)
-        if t in ["shutdown pc", "shut down pc", "turn off pc", "power off laptop", "turn off laptop", "shutdown system"]:
+        if t in ["shutdown", "shutdown pc", "shut down", "shut down pc", "turn off pc", "power off laptop", "turn off laptop", "shutdown system"]:
+            if getattr(self, "demo_mode", False):
+                return "🔒 Demo Edition: Power commands (shutdown/restart) are disabled for safety."
             self._pending_power_action = "shutdown"
             return "⚠️ Are you sure you want to shut down your PC? Say 'confirm shutdown' to proceed, or 'cancel' to abort."
 
