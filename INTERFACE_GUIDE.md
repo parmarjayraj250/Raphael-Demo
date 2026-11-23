@@ -8,8 +8,7 @@ This guide provides a comprehensive breakdown of every button, chip, and interac
 
 | Element | Appearance | What It Does |
 |---|---|---|
-| **Identity Badge** | `● RAPHAEL` | Displays Raphael's core engine status. Clicking it queries real-time system status and checks active memory. |
-| **Network Pill** | `🌐 ONLINE` | Indicates connectivity status for real-time web querying and live telemetry. |
+| **Network Indicator** | `🌐 ONLINE` / `🚫 OFFLINE` | Real-time internet connectivity monitor. Dynamically shows `🌐 ONLINE` when internet/data is active and `🚫 OFFLINE` when disconnected. Clicking it checks connection status. |
 | **Safety Badge** | `🛡 DEMO SAFE` | Highlights that the active session is running in isolated demo mode with strict deterministic guardrails. Clicking it opens the interactive help overview. |
 | **Research Vault** | `🔬 RESEARCH` | Opens the Research Vault interface for synthesized multi-source intelligence reports. |
 | **Window Controls** | `—` / `✕` | Minimizes to system tray or gracefully exits the application. |

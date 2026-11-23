@@ -126,6 +126,7 @@ class RaphaelGUI:
         self._animate_hud_orb()
         self._draw_wave()
         self._start_gauge_updater()
+        self._start_network_monitor()
         if self.is_locked:
             self._lock_ui()
 
@@ -163,18 +164,70 @@ class RaphaelGUI:
         threading.Thread(target=_singleton_wakeup, daemon=True).start()
 
 
+    def _set_status_dot(self, text, text_color, border_color):
+        if getattr(self, "status_dot", None) is not None:
+            try:
+                self.status_dot.configure(text=text, text_color=text_color, border_color=border_color)
+            except Exception:
+                pass
+
+    def _check_network_status(self, announce=False):
+        def _bg():
+            import socket
+            is_connected = False
+            for host in [("1.1.1.1", 53), ("8.8.8.8", 53)]:
+                try:
+                    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    s.settimeout(1.5)
+                    s.connect(host)
+                    s.close()
+                    is_connected = True
+                    break
+                except Exception:
+                    continue
+
+            def _update():
+                if getattr(self, "net_pill", None) is not None:
+                    if is_connected:
+                        self.net_pill.configure(
+                            text="🌐 ONLINE",
+                            fg_color="#0a1c3d", hover_color="#122b5c",
+                            border_color="#1e40af", text_color="#38bdf8"
+                        )
+                    else:
+                        self.net_pill.configure(
+                            text="🚫 OFFLINE",
+                            fg_color="#200a0a", hover_color="#381010",
+                            border_color="#7f1d1d", text_color="#ef4444"
+                        )
+                if announce:
+                    msg = "🌐 Network Status: Online (Connected to internet)." if is_connected else "🚫 Network Status: Offline (No internet connection detected)."
+                    self._append("System", msg)
+
+            try:
+                self.root.after(0, _update)
+            except Exception:
+                pass
+
+        threading.Thread(target=_bg, daemon=True).start()
+
+    def _start_network_monitor(self):
+        self._check_network_status(announce=False)
+        try:
+            self.root.after(10000, self._start_network_monitor)
+        except Exception:
+            pass
+
     def _on_speak_start(self):
         def _do():
             self._start_wave()
-            if hasattr(self, "status_dot"):
-                self.status_dot.configure(text="● SPEAKING", text_color=self.GOLD_ACCENT, border_color=self.GOLD_ACCENT)
+            self._set_status_dot("● SPEAKING", self.GOLD_ACCENT, self.GOLD_ACCENT)
         self.root.after(0, _do)
 
     def _on_speak_end(self):
         def _do():
             self._stop_wave()
-            if hasattr(self, "status_dot"):
-                self.status_dot.configure(text="● ONLINE", text_color=self.PURPLE_ACCENT, border_color=self.PURPLE_ACCENT)
+            self._set_status_dot("● READY", self.PURPLE_ACCENT, self.PURPLE_ACCENT)
         self.root.after(0, _do)
 
     # ── Global Hotkey: Multi-Key Windows RegisterHotKey & Keyboard Hook ─────────
@@ -255,8 +308,7 @@ class RaphaelGUI:
         """Immediately executes emergency stop in independent thread."""
         self.engine.safety_manager.trigger_emergency_stop("F12_KEY")
         def _update():
-            if hasattr(self, "status_dot"):
-                self.status_dot.configure(text="● READY (ABORTED)", text_color=self.RED, border_color=self.RED)
+            self._set_status_dot("● READY (ABORTED)", self.RED, self.RED)
             self._append("System", "🛑 EMERGENCY STOP (F12) ACTIVATED: All computer actions and worker tasks terminated immediately.")
         self.root.after(0, _update)
 
@@ -537,26 +589,28 @@ class RaphaelGUI:
         hdr_right = ctk.CTkFrame(hdr, fg_color="transparent")
         hdr_right.pack(side="right", padx=14)
 
-        # Status badge pill (Raphael with green dot)
-        status_text = "● RAPHAEL" if self.demo else "● RAPHAEL ⌵"
-        self.status_dot = ctk.CTkButton(
-            hdr_right, text=status_text, width=105, height=26,
-            fg_color="#0c152e", hover_color="#141f3d",
-            border_color="#1e294b", border_width=1,
-            text_color="#f8fafc", font=ctk.CTkFont(size=10, weight="bold"),
-            corner_radius=13, command=lambda: self._quick("system status")
-        )
-        self.status_dot.pack(side="left", padx=5)
+        # Status badge & Network pill (In demo mode, single dynamic Online/Offline indicator)
+        if not self.demo:
+            self.status_dot = ctk.CTkButton(
+                hdr_right, text="● RAPHAEL ⌵", width=105, height=26,
+                fg_color="#0c152e", hover_color="#141f3d",
+                border_color="#1e294b", border_width=1,
+                text_color="#f8fafc", font=ctk.CTkFont(size=10, weight="bold"),
+                corner_radius=13, command=lambda: self._quick("system status")
+            )
+            self.status_dot.pack(side="left", padx=5)
+        else:
+            self.status_dot = None
 
-        # Online Network pill
-        net_pill = ctk.CTkButton(
-            hdr_right, text="🌐 ONLINE", width=88, height=26,
+        # Dedicated Dynamic Network Connectivity Indicator (Online / Offline)
+        self.net_pill = ctk.CTkButton(
+            hdr_right, text="🌐 ONLINE", width=92, height=26,
             fg_color="#0a1c3d", hover_color="#122b5c",
             border_color="#1e40af", border_width=1,
             text_color="#38bdf8", font=ctk.CTkFont(size=10, weight="bold"),
-            corner_radius=13, command=lambda: self._quick("system status")
+            corner_radius=13, command=lambda: self._check_network_status(announce=True)
         )
-        net_pill.pack(side="left", padx=5)
+        self.net_pill.pack(side="left", padx=5)
 
         # Mobile Remote / Demo Badge pill
         if self.demo:
@@ -1820,7 +1874,7 @@ class RaphaelGUI:
             self.root.after(0, lambda: (
                 self.mic_btn.configure(fg_color=self.RED, text_color="#fff"),
                 self.listen_pill.configure(text="🎙  Listening...", fg_color="#3d1414", text_color=self.RED, border_color=self.RED),
-                self.status_dot.configure(text="● LISTENING", text_color=self.YELLOW, border_color=self.YELLOW),
+                self._set_status_dot("● LISTENING", self.YELLOW, self.YELLOW)
             ))
             self.root.after(0, self._start_wave)
             text = self.engine.listen()
@@ -1828,7 +1882,7 @@ class RaphaelGUI:
             self.root.after(0, lambda: (
                 self.mic_btn.configure(fg_color="#201a08", text_color=self.GOLD_BRIGHT),
                 self.listen_pill.configure(text="🎙  Tap to Speak", fg_color="#201a08", text_color=self.GOLD_BRIGHT, border_color=self.GOLD_ACCENT),
-                self.status_dot.configure(text="● ONLINE", text_color=self.PURPLE_ACCENT, border_color=self.PURPLE_ACCENT),
+                self._set_status_dot("● READY", self.PURPLE_ACCENT, self.PURPLE_ACCENT)
             ))
             if text:
                 self._append("You (Voice)", text)
